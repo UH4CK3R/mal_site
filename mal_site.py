@@ -7,7 +7,7 @@ arp_spoof = ARP()
 
 eth = neti.interfaces()[1]
 
-f = open("mal_site.txt","r")
+f = open("mal_site.txt","r") #Get Malicious site lists
 mal_data = f.read().split("\n")
 
 def arp_broadcast(arg_ip): #Get Recever's Mac
@@ -39,7 +39,7 @@ def arp_spoofing(): #Attack
     send(arp_spoof)
     print "[+] ARP Spoofing is Done!"
 
-def packet_filter(packet):
+def packet_filter(packet): # If URL in Malicious list then Packet is Filtered
     if str(packet).find("HTTP")!=-1:
         for mal_url in mal_data:
             if mal_url == "": continue
@@ -52,8 +52,8 @@ def packet_filter(packet):
 
 def packet_relay(packet): #Packet Relay
     if (packet[IP].src == sys.argv[1] and packet[Ether].dst == s_mac):
-        if str(packet).find("HTTP")!=-1:
-            if packet_filter(packet)==0:
+        if str(packet).find("HTTP")!=-1: # Check HTTP Packet
+            if packet_filter(packet)==0: # Packet Filter
                 return 0
         if packet[Ether].src == r_mac:
             packet[Ether].dst = g_mac
