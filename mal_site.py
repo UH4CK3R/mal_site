@@ -9,6 +9,7 @@ eth = neti.interfaces()[1]
 
 f = open("mal_site.txt","r") #Get Malicious site lists
 mal_data = f.read().split("\n")
+f2 = open("mal_log.txt","a") #Set Log File
 
 def arp_broadcast(arg_ip): #Get Recever's Mac
     arp_bro = ARP()
@@ -46,6 +47,7 @@ def packet_filter(packet): # If URL in Malicious list then Packet is Filtered
             mal_url = mal_url.replace("http://","").replace("https://","")
             if str(packet).find("Host: "+mal_url)!=-1:
                 print mal_url + " -- Detected !!!!"
+                f2.write(mal_url+" was blocked -- "+sys.argv[1]+"\n") #Logging
                 return 0
 
     return 1
@@ -71,6 +73,9 @@ def main():
     while(1): #arp_spoofing attack after 50th sniffing
         sniff(prn=packet_relay,filter="ip", store=0, count=50)
         arp_spoofing()
+    
+    f.close()
+    f2.close()
 
 if __name__ == '__main__':
     main()
